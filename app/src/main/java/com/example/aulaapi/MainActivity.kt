@@ -7,12 +7,17 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.aulaapi.api.EnderecoAPI
+import com.example.aulaapi.api.PostagemAPI
 import com.example.aulaapi.api.RetrofitHelper
+import com.example.aulaapi.api.RetrofitHelper.Companion.retrofit
 import com.example.aulaapi.databinding.ActivityMainBinding
+import com.example.aulaapi.model.Comentario
 import com.example.aulaapi.model.Endereco
+import com.example.aulaapi.model.Postagem
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import retrofit2.Response
 
 class MainActivity : AppCompatActivity() {
@@ -37,8 +42,105 @@ class MainActivity : AppCompatActivity() {
 
         binding.btnIniciar.setOnClickListener {
             CoroutineScope(Dispatchers.IO).launch {
-                recuperarEndereco()
+                //recuperarEndereco()
+                //recuperarPostagens()
+                //recuperarPostagemUnica()
+                recuperarComentatiosParaPostagem()
             }
+        }
+    }
+
+    private suspend fun recuperarComentatiosParaPostagem() {
+        var retorno: Response<List<Comentario>>? = null
+
+        try {
+            val postagemAPI = retrofit.create( PostagemAPI::class.java )
+            retorno = postagemAPI.recuperarComentariosParaPostagem( 1 )
+        }catch (e: Exception){
+            e.printStackTrace()
+            Log.i("info_jsonplace", "erro ao recuperar")
+        }
+
+        if ( retorno != null ){
+
+            if( retorno.isSuccessful ){
+
+                val listaPostagens = retorno.body()
+
+                var resultado = ""
+                listaPostagens?.forEach { comentario ->
+                    val idComentario = comentario.id
+                    val email = comentario.email
+                    val comentarioResultado = "$idComentario - $email \n"
+                    resultado += comentarioResultado
+
+                    Log.i("info_jsonplace", "$idComentario - $email")
+                }
+
+                withContext(Dispatchers.Main){
+                    binding.textResultado.text = resultado
+                }
+
+
+            }
+
+        }
+    }
+
+    private suspend fun recuperarPostagemUnica() {
+        var retorno: Response<Postagem>? = null
+
+        try {
+            val postagemAPI = retrofit.create( PostagemAPI::class.java )
+            retorno = postagemAPI.recuperarPostagemUnica( 1 )
+        }catch (e: Exception){
+            e.printStackTrace()
+            Log.i("info_jsonplace", "erro ao recuperar")
+        }
+
+        if ( retorno != null ){
+
+            if( retorno.isSuccessful ){
+
+                val postagem = retorno.body()
+                val resultado = "${postagem?.id} - ${postagem?.title}"
+
+                withContext(Dispatchers.Main){
+                    binding.textResultado.text = resultado
+
+                Log.i("info_jsonplace", resultado)
+            }
+
+
+            }
+
+        }
+    }
+
+    private suspend fun recuperarPostagens() {
+        var retorno: Response<List<Postagem>>? = null
+
+        try {
+            val postagemAPI = retrofit.create( PostagemAPI::class.java )
+            retorno = postagemAPI.recuperarPostagens()
+        }catch (e: Exception){
+            e.printStackTrace()
+            Log.i("info_jsonplace", "erro ao recuperar")
+        }
+
+        if ( retorno != null ){
+
+            if( retorno.isSuccessful ){
+
+                val listaPostagens = retorno.body()
+                listaPostagens?.forEach { postagem ->
+                    val id = postagem.id
+                    val title = postagem.title
+                    Log.i("info_jsonplace", "$id - $title") }
+
+
+            }
+
         }
     }
 
