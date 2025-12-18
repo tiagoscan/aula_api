@@ -45,8 +45,47 @@ class MainActivity : AppCompatActivity() {
                 //recuperarEndereco()
                 //recuperarPostagens()
                 //recuperarPostagemUnica()
-                recuperarComentatiosParaPostagem()
+                //recuperarComentatiosParaPostagem()
+                salvarPostagem()
             }
+        }
+    }
+
+    private suspend fun salvarPostagem() {
+        var retorno: Response<Postagem>? = null
+
+        val postagem = Postagem(
+            "Corpo da postagem",
+            -1,
+            "Titulo da postagem",
+            1090
+        )
+
+        try {
+            val postagemAPI = retrofit.create( PostagemAPI::class.java )
+
+            retorno = postagemAPI.salvarPostagem( postagem ) //Query
+        }catch (e: Exception){
+            e.printStackTrace()
+            Log.i("info_jsonplace", "erro ao recuperar")        }
+
+        if ( retorno != null ){
+            if( retorno.isSuccessful ){
+                val postagem = retorno.body()
+
+                val id = postagem?.id
+                val titulo = postagem?.title
+                val idUsuario = postagem?.userId
+
+                var resultado = "id: $id - T:$titulo - U$idUsuario"
+
+                    withContext(Dispatchers.Main){
+                    binding.textResultado.text = resultado
+                }
+
+
+            }
+
         }
     }
 
@@ -55,7 +94,8 @@ class MainActivity : AppCompatActivity() {
 
         try {
             val postagemAPI = retrofit.create( PostagemAPI::class.java )
-            retorno = postagemAPI.recuperarComentariosParaPostagem( 1 )
+            //retorno = postagemAPI.recuperarComentariosParaPostagem( 1 ) Path
+            retorno = postagemAPI.recuperarComentariosParaPostagemQuery( 1 ) //Query
         }catch (e: Exception){
             e.printStackTrace()
             Log.i("info_jsonplace", "erro ao recuperar")
