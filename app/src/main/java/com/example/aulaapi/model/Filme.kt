@@ -1,6 +1,6 @@
 package com.example.aulaapi.model
 
-data class Result(
+data class Filme(
     val adult: Boolean,
     val backdrop_path: String,
     val genre_ids: List<Int>,
