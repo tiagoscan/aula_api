@@ -2,6 +2,7 @@ package com.example.aulaapi.api
 
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.create
 
 class RetrofitHelper {
     companion object{
@@ -14,5 +15,13 @@ class RetrofitHelper {
             .baseUrl("https://jsonplaceholder.typicode.com/")
             .addConverterFactory( GsonConverterFactory.create() )//json ou XML
             .build()
+
+        val filmeAPI = Retrofit.Builder()
+            .baseUrl("https://api.themoviedb.org/3/")
+            .addConverterFactory( GsonConverterFactory.create() )//json ou XML
+            .build()
+            .create( FilmeAPI::class.java )
+
+
     }
 }

@@ -30,6 +30,10 @@ class MainActivity : AppCompatActivity() {
         RetrofitHelper.retrofit
     }
 
+    private val filmeAPI by lazy {
+        RetrofitHelper.filmeAPI
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
